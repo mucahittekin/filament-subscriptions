@@ -86,7 +86,7 @@ class Subscription extends Model
     ];
 
     protected $casts = [
-        'subscriber_id' => 'integer',
+//        'subscriber_id' => 'integer',
         'subscriber_type' => 'string',
         'plan_id' => 'integer',
         'slug' => 'string',

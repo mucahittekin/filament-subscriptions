@@ -23,6 +23,7 @@ use TomatoPHP\FilamentSubscriptions\Events\RenewPlan;
 use TomatoPHP\FilamentSubscriptions\Events\SubscribePlan;
 use TomatoPHP\FilamentSubscriptions\Facades\FilamentSubscriptions;
 use TomatoPHP\FilamentSubscriptions\Http\Middleware\VerifyBillableIsSubscribed;
+use TomatoPHP\FilamentSubscriptions\Services\FilamentSubscriptionServices;
 use function Pest\Laravel\call;
 
 class Billing extends Page implements HasActions
@@ -74,6 +75,7 @@ class Billing extends Page implements HasActions
 
 
     public $user;
+    public $subscriber;
     public $plans;
     public $currentSubscription;
     public $currentPanel;
@@ -81,8 +83,9 @@ class Billing extends Page implements HasActions
     public function mount()
     {
         $this->user = Filament::auth()->getUser();
+        $this->subscriber = FilamentSubscriptionServices::getSubscriber();
         $this->plans = Plan::where('is_active', true)->orderBy('sort_order', 'asc')->get();
-        $this->currentSubscription = $this->user->planSubscriptions()->first();
+        $this->currentSubscription =  $this->subscriber->planSubscriptions()->first();
         $this->currentPanel = Filament::getCurrentPanel()->getId();
 
         if(!$this->currentSubscription){
@@ -119,7 +122,7 @@ class Billing extends Page implements HasActions
             ->requiresConfirmation()
             ->label(function() use ($plan){
                 if($plan){
-                    $hasSubscription = $this->user->planSubscriptions()->first();
+                    $hasSubscription =  $this->subscriber->planSubscriptions()->first();
                     if($hasSubscription){
                         if($hasSubscription->plan_id === $plan->id){
                             if($hasSubscription->active()){
@@ -144,7 +147,7 @@ class Billing extends Page implements HasActions
             ->modalHeading(function(array $arguments){
                 $plan = Plan::find($arguments['plan']['id']);
                 if($plan){
-                    $hasSubscription = $this->user->planSubscriptions()->first();
+                    $hasSubscription =  $this->subscriber->planSubscriptions()->first();
                     if($hasSubscription){
                         if($hasSubscription->plan_id === $plan->id){
                             if($hasSubscription->active()){
@@ -168,7 +171,7 @@ class Billing extends Page implements HasActions
             })
             ->disabled(function() use ($plan){
                 if($plan){
-                    $hasSubscription = $this->user->planSubscriptions()->first();
+                    $hasSubscription =  $this->subscriber->planSubscriptions()->first();
                     if($hasSubscription){
                         if($hasSubscription->plan_id === $plan->id){
                             if($hasSubscription->active()){
@@ -182,7 +185,7 @@ class Billing extends Page implements HasActions
             })
             ->color(function() use ($plan){
                 if($plan){
-                    $hasSubscription = $this->user->planSubscriptions()->first();
+                    $hasSubscription = $this->subscriber->planSubscriptions()->first();
                     if($hasSubscription){
                         if($hasSubscription->plan_id === $plan->id){
                             if($hasSubscription->active()){
@@ -199,7 +202,7 @@ class Billing extends Page implements HasActions
             })
             ->icon(function() use ($plan){
                 if($plan){
-                    $hasSubscription = $this->user->planSubscriptions()->first();
+                    $hasSubscription =  $this->subscriber->planSubscriptions()->first();
                     if($hasSubscription){
                         if($hasSubscription->plan_id === $plan->id){
                             if($hasSubscription->active()){
@@ -313,19 +316,19 @@ class Billing extends Page implements HasActions
         }
 
         // No current subscription
-        $this->user->newPlanSubscription('main', $plan);
+        $this->subscriber->newPlanSubscription('main', $plan);
 
         Event::dispatch(new SubscribePlan([
             "old" => null,
             "new" => $plan,
-            "subscription" => $this->user->planSubscriptions()->first()
+            "subscription" =>  $this->subscriber->planSubscriptions()->first()
         ]));
 
         if(!$main){
             return call_user_func(FilamentSubscriptions::getAfterSubscription(), [
                 "old" => null,
                 "new" => $plan,
-                "subscription" => $this->user->planSubscriptions()->first()
+                "subscription" =>  $this->subscriber->planSubscriptions()->first()
             ]);
         }
         else {
@@ -341,7 +344,7 @@ class Billing extends Page implements HasActions
 
     public function cancel()
     {
-        $activeSubscriptions = $this->user->activePlanSubscriptions();
+        $activeSubscriptions =  $this->subscriber->activePlanSubscriptions();
 
 
         if ($activeSubscriptions->isEmpty()) {

@@ -5,6 +5,8 @@ namespace TomatoPHP\FilamentSubscriptions\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use TomatoPHP\FilamentSubscriptions\Facades\FilamentSubscriptions;
+use TomatoPHP\FilamentSubscriptions\Services\FilamentSubscriptionServices;
 
 class VerifyBillableIsSubscribed
 {
@@ -15,9 +17,9 @@ class VerifyBillableIsSubscribed
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
+        $subscriber = FilamentSubscriptionServices::getSubscriber();
 
-        if ($user && $user->activePlanSubscriptions()->isEmpty()) {
+        if ($subscriber && $subscriber->activePlanSubscriptions()->isEmpty()) {
             if(filament()->getTenant()){
                 return redirect()->route('filament.'.filament()->getCurrentPanel()->getId().'.tenant.billing', ['tenant'=> filament()->getTenant()->{filament()->getCurrentPanel()->getTenantSlugAttribute()}]);
             }

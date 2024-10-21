@@ -1,5 +1,5 @@
 {
-    "name": "tomatophp/filament-subscriptions",
+    "name": "mucahit/filament-subscriptions",
     "type": "library",
     "description": "Manage subscriptions and feature access with customizable plans in FilamentPHP",
     "keywords": [

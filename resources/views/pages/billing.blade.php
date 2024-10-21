@@ -3,7 +3,7 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-900">
                 <x-filament-panels::logo  />
-                {{ env('APP_NAME', 'Laravel') }}
+
             </h1>
             <h2 class="text-lg font-semibold">
                 {{ trans('filament-subscriptions::messages.view.billing_management') }}
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="text-sm">
-                {{ trans('filament-subscriptions::messages.view.managing_billing_for') }} {{ $user->name }}.
+                {{ trans('filament-subscriptions::messages.view.managing_billing_for') }} {{ $subscriber->name }}.
             </div>
             <div class="mt-6">
                 {{ trans('filament-subscriptions::messages.view.our_billing_management') }}
@@ -42,7 +42,7 @@
             <x-filament::section
                 :heading="trans('filament-subscriptions::messages.view.subscribe')"
             >
-                @if (!$user->subscribedPlans()->first())
+                @if (!$subscriber->subscribedPlans()->first())
                     <div class="my-4">
                         <div>
                             <div class="px-6 py-4 bg-gray-200 border border-gray-300 sm:rounded-lg shadow-sm mb-6">

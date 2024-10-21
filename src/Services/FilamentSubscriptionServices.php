@@ -24,7 +24,7 @@ class FilamentSubscriptionServices
     public function __construct()
     {
         $this->currentPanel = Filament::getCurrentPanel()->getId();
-        $this->afterSubscription = function(array $data) {
+        $this->afterSubscription = function (array $data) {
             Notification::make()
                 ->title(trans('filament-subscriptions::messages.notifications.subscription.title'))
                 ->body(trans('filament-subscriptions::messages.notifications.subscription.message'))
@@ -32,7 +32,7 @@ class FilamentSubscriptionServices
                 ->send();
             return redirect()->to($this->currentPanel);
         };
-        $this->afterRenew = function(array $data) {
+        $this->afterRenew = function (array $data) {
             Notification::make()
                 ->title(trans('filament-subscriptions::messages.notifications.renew.title'))
                 ->body(trans('filament-subscriptions::messages.notifications.renew.message'))
@@ -41,7 +41,7 @@ class FilamentSubscriptionServices
 
             return redirect()->to($this->currentPanel);
         };
-        $this->afterCanceling = function(array $data) {
+        $this->afterCanceling = function (array $data) {
             Notification::make()
                 ->title(trans('filament-subscriptions::messages.notifications.cancel.title'))
                 ->body(trans('filament-subscriptions::messages.notifications.cancel.message'))
@@ -49,7 +49,7 @@ class FilamentSubscriptionServices
                 ->send();
             return redirect()->to($this->currentPanel);
         };
-        $this->afterChange = function(array $data) {
+        $this->afterChange = function (array $data) {
             Notification::make()
                 ->title(trans('filament-subscriptions::messages.notifications.change.title'))
                 ->body(trans('filament-subscriptions::messages.notifications.change.message'))
@@ -81,8 +81,8 @@ class FilamentSubscriptionServices
 
     public static function register(Subscriber|array $author)
     {
-        if(is_array($author)) {
-            foreach($author as $type) {
+        if (is_array($author)) {
+            foreach ($author as $type) {
                 self::register($type);
             }
             return;
@@ -113,5 +113,10 @@ class FilamentSubscriptionServices
     public static function getOptions(): Collection
     {
         return collect(self::$authorTypes);
+    }
+
+    public static function getSubscriber()
+    {
+        return config('filament-subscriptions.belongsTo', 'user') == 'user' ? Filament::auth()->getUser() : Filament::getTenant();
     }
 }

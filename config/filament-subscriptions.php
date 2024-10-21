@@ -1,5 +1,6 @@
 <?php
 
 return [
-   "route" => "/admin/billing"
+   "route" => "/admin/billing",
+   "belongsTo" => "user"
 ];
